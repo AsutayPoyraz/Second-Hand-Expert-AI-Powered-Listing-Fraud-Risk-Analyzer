@@ -1,0 +1,35 @@
+services:
+  eksper:
+    build: .
+    image: ikinci-el-eksper:latest
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      API_KEY_STORE_PATH: /app/data/api-key.json
+      # Ters proxy arkasında çalıştırıyorsanız:
+      # TRUST_PROXY: '1'
+    read_only: true
+    volumes:
+      - eksper-data:/app/data
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:3000/api/health']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+volumes:
+  eksper-data:

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>İkinci El Eksper (Gemini)</title>
+<meta name="description" content="İkinci el araç ve ürün ilanları için Gemini destekli kusur, dolandırıcılık riski ve piyasa analizi.">
+<meta name="theme-color" content="#0f1115">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕵️</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<a class="skip" href="#form">İçeriğe geç</a>
+<div class="wrap">
+  <h1>🕵️ İkinci El Eksper <small style="color:var(--mut);font-weight:400">· Gemini</small></h1>
+  <p class="sub">İlanı gir, fotoğrafları ekle; sahibinden, arabam, letgo, dolap gibi sitelerde emsal araştırılır, kusur ve kanıt soruları çıkarılır.</p>
+
+  <div class="note hide" id="serverNote" role="alert"></div>
+
+  <section class="card no-print" id="apiKeyCard" aria-labelledby="apiKeyTitle">
+    <h3 id="apiKeyTitle">🔑 Gemini API anahtarı</h3>
+    <div class="hint" id="apiKeyStatusText" role="status" aria-live="polite">Anahtar durumu yükleniyor…</div>
+    <label for="apiKeyInput">API anahtarı</label>
+    <div class="url-row">
+      <input id="apiKeyInput" type="password" placeholder="AIza… veya AQ.…" autocomplete="new-password" spellcheck="false" aria-describedby="apiKeyHint">
+      <button type="button" class="sec" id="apiKeySave">Kaydet</button>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="sec" id="apiKeyTest">Bağlantıyı test et</button>
+      <button type="button" class="sec" id="apiKeyDelete" disabled>Kayıtlı anahtarı sil</button>
+    </div>
+    <div class="hint" id="apiKeyHint">Anahtar yalnızca sunucuda, web kökü dışındaki bir dosyada saklanır; tarayıcıya veya localStorage'a yazılmaz. Ekranda yalnızca maskeli hâli görünür. Anahtar değişince analizler yeni anahtarı kullanır; sunucuyu yeniden başlatmanız gerekmez.</div>
+    <div class="fetch-note hide" id="apiKeyNote" role="status" aria-live="polite"></div>
+  </section>
+
+  <div class="card no-print">
+    <label style="margin-top:0" for="model">Model</label>
+    <select id="model" aria-describedby="modelHint"></select>
+    <div class="hint" id="modelHint">Flash hızlı, Pro daha titiz. Gemini API anahtarı yalnızca sunucuda saklanır; tarayıcıya hiçbir şekilde gönderilmez.</div>
+    <div class="note hide" id="quotaNote" role="alert" style="margin:12px 0 0"></div>
+  </div>
+
+  <form id="form" class="card" novalidate role="tabpanel" aria-labelledby="tab-vasita">
+    <label style="margin-top:0" id="catLabel">Kategori</label>
+    <div class="tabs" role="tablist" aria-labelledby="catLabel">
+      <div class="tab on" data-cat="vasita" role="tab" id="tab-vasita" tabindex="0" aria-selected="true" aria-controls="panel-fields">🚗 1. Vasıta</div>
+      <div class="tab" data-cat="ikinciel" role="tab" id="tab-ikinciel" tabindex="-1" aria-selected="false" aria-controls="panel-fields">📦 2. 2. El İlanlar</div>
+    </div>
+    <div id="panel-fields" role="group" aria-labelledby="tab-vasita">
+
+    <div class="row">
+      <div>
+        <label for="name">Ürün / araç adı *</label>
+        <input id="name" placeholder="Örn: Renault Clio 1.5 dCi 2018 / iPhone 13 128GB" autocomplete="off">
+        <div class="field-err hide" id="err-name"></div>
+      </div>
+      <div>
+        <label for="price">İlan fiyatı (TL) *</label>
+        <input id="price" inputmode="numeric" placeholder="Örn: 21000" autocomplete="off">
+        <div class="field-err hide" id="err-price"></div>
+      </div>
+    </div>
+
+    <div class="row" id="vasitaFields">
+      <div>
+        <label for="year">Model yılı *</label>
+        <input id="year" inputmode="numeric" placeholder="2018" autocomplete="off">
+        <div class="field-err hide" id="err-year"></div>
+      </div>
+      <div>
+        <label for="km">Kilometre *</label>
+        <input id="km" inputmode="numeric" placeholder="145000" autocomplete="off">
+        <div class="field-err hide" id="err-km"></div>
+      </div>
+    </div>
+
+    <label for="desc">İlan açıklaması (opsiyonel, satıcının yazdığı gibi yapıştır)</label>
+    <textarea id="desc"></textarea>
+    <div class="field-err hide" id="err-desc"></div>
+    <label for="url">İlan linki (opsiyonel)</label>
+    <div class="url-row">
+      <input id="url" placeholder="https://www.sahibinden.com/ilan/..." inputmode="url" autocomplete="off">
+      <button type="button" class="sec" id="fetchListing">İlan linkinden getir</button>
+    </div>
+    <div class="hint">Başlık, açıklama, fiyat ve fotoğrafları ilan sayfasından otomatik almak için bu düğmeyi kullanın. Analiz sırasında da link otomatik taranır.</div>
+    <div class="fetch-note hide" id="fetchNote" role="status" aria-live="polite"></div>
+    <div class="field-err hide" id="err-url"></div>
+
+    <label for="files">Fotoğraflar (en fazla 8)</label>
+    <input id="files" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+    <div class="thumbs" id="thumbs"></div>
+    <div class="hint" id="photoHint"></div>
+    <div class="field-err hide" id="err-photos"></div>
+    </div>
+
+    <div class="kvkk">
+      <label class="check" for="kvkk">
+        <input id="kvkk" type="checkbox">
+        <span>Fotoğraf ve ilan bilgilerimin analiz için sunucuya ve Google Gemini API'sine gönderilmesini kabul ediyorum (<a href="#kvkkText" id="kvkkLink">KVKK bilgilendirmesi</a>).</span>
+      </label>
+      <details id="kvkkText">
+        <summary>KVKK / gizlilik bilgilendirmesi</summary>
+        <p class="hint">Yüklediğiniz fotoğraflar ve ilan bilgileri yalnızca analiz amacıyla işlenir. Fotoğraflar tarayıcıda 1400 px'e küçültülür ve doğrudan sunucu üzerinden Google Gemini API'sine iletilir. Sunucu, fotoğrafları analiz sonrası kalıcı olarak saklamaz; iş kaydı 10 dakika içinde bellekten silinir. Rapor geçmişi yalnızca sizin tarayıcınızda (localStorage) tutulur. Plaka, şasi no, IMEI gibi kişisel verileri fotoğraflardan çıkarmanız önerilir.</p>
+      </details>
+      <div class="field-err hide" id="err-kvkk"></div>
+    </div>
+
+    <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+      <button id="go" type="button">Analiz et</button>
+      <button type="button" class="sec" id="resetBtn">Temizle</button>
+      <button type="button" class="sec hide" id="cancel" title="Devam eden analizi iptal et">İptal</button>
+    </div>
+  </form>
+
+  <div id="status" class="status hide" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <div id="prog" class="card prog hide" aria-live="polite">
+    <div class="prog-top">
+      <div class="spin" aria-hidden="true"></div>
+      <div><div class="prog-title" id="pTitle">Hazırlanıyor…</div><div class="hint" id="pSub"></div></div>
+      <div class="prog-meta"><div id="pPct">%0</div><div id="pEta"></div></div>
+    </div>
+    <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="pTitle"><i id="pBar"></i></div>
+    <ul class="steps" id="pSteps"></ul>
+  </div>
+
+  <div id="out"></div>
+
+  <section class="card hide" id="historyCard" aria-labelledby="historyTitle">
+    <h3 id="historyTitle">🗂️ Rapor geçmişi <span class="hint" id="historyCount"></span></h3>
+    <p class="hint">Son 20 rapor yalnızca bu tarayıcıda saklanır. Karşılaştırmak için en fazla 2 rapor seçin.</p>
+    <div id="historyList"></div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="sec" id="compareBtn" disabled>Seçilenleri karşılaştır</button>
+      <button type="button" class="sec" id="clearHistoryBtn">Geçmişi temizle</button>
+    </div>
+    <div id="compareOut"></div>
+  </section>
+</div>
+
+<noscript><p class="note">Bu uygulama JavaScript gerektirir.</p></noscript>
+
+<script src="js/app.js"></script>
+</body>
+</html>
