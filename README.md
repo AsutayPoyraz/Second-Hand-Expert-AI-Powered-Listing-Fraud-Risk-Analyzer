@@ -1,4 +1,4 @@
-# Second-Hand Expert (Gemini) — v2.6.0
+# Second-Hand Expert (Gemini) — v1
 
 An application that uses Gemini to analyze listing information and photos for second-hand products/vehicles, producing a defect/fraud-risk analysis, comparable market research, and evidence questions to ask the seller.
 
